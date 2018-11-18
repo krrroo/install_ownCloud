@@ -1,0 +1,50 @@
+---
+- hosts: ownCloud_nodes
+  become: yes
+  tasks:
+   - name: "Installation of httpd"
+     yum:
+       name: httpd
+       state: latest
+   - name: "Start server"
+     service:
+       name: httpd
+       state: started
+   - name: "Installation of PHP + extensions"
+     yum:
+       name: "{{item}}"
+       state: latest
+     with_items:
+       - php
+       - php-ctype
+       - php-curl
+       - php-dom
+       - php-gd
+       - php-iconv
+       - php-intl
+       - php-json
+       - php-libxml
+       - php-openssl
+       - php-pdo_mysql
+       - php-phar
+       - php-posix
+       - php-simplexml
+       - php-xmlwriter
+       - php-zip
+       - php-zlib
+   - name: "Installation of MariaDB server"
+     yum:
+       name: "{{item}}"
+       state: latest
+     with_items:
+       - mariadb
+       - mariadb-server
+   - name: "Download ownCloud"
+     get_url:
+        url: https://download.owncloud.org/community/owncloud-10.0.10.zip
+        dest: ~/ownCloud.zip
+   - name: "Unpack ownCloud archive"
+     unarchive:
+       src: ~/ownCloud.zip
+       dest: /var/www
+       remote_src: yes
